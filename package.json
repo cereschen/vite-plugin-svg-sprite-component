@@ -1,0 +1,28 @@
+{
+  "name": "vite-plugin-svg-sprite",
+  "version": "1.0.0",
+  "description": "vite plugin for creating SVG sprites",
+  "keywords": [
+    "vue",
+    "vite",
+    "svg",
+    "sprite"
+  ],
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "tsc -w"
+  },
+  "homepage": "https://github.com/cereschen/vite-plugin-svg-sprite",
+  "author": "cereschen",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^1.0.0-rc.13"
+  },
+  "dependencies": {
+    "htmlparser2": "^5.0.1"
+  }
+}
