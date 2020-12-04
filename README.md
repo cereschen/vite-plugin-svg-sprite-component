@@ -1,9 +1,14 @@
-# vite-plugin-svg-sprite
+# vite-plugin-svg-sprite-component
+Vite plugin for creating SVG sprites and components
+## install
+`npm i vite-plugin-svg-sprite-component -D`
+
+`yarn add vite-plugin-svg-sprite-component -D`
 
 ## usage
 ```js
 // vite.config.js
-import svgSpritePlugin from "vite-plugin-svg-sprite"
+import svgSpritePlugin from "vite-plugin-svg-sprite-component"
 const sharedConfig = {
   alias: {
     '/@/': path.resolve(__dirname, 'src')
