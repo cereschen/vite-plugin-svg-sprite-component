@@ -1,0 +1,18 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "npx serve dist"
+  },
+  "author": "cereschen",
+  "license": "Mit",
+  "devDependencies": {
+    "vite": "latest",
+    "vite-plugin-svg-sprite-component": "latest",
+    "vite-transform-globby-import": "^1.0.0-rc.7"
+  }
+}
