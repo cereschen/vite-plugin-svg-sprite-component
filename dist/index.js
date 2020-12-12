@@ -124,7 +124,7 @@ function createPlugin(options) {
                                 });
                             }
                             componentCode = "\n       import {h} from \"vue\";\n       export const " + componentName + " = h('svg',{},h('use',{'xlink:href':'#" + finalSymbolId + "'}));\n       " + (defaultExport ? "export default " + componentName : source) + ";\n       ";
-                            htmlCode = "\n          let node = document.getElementById('" + finalSymbolId + "');\n          if(!node){\n            let svg = document.createElement('div');\n            svg.innerHTML = `" + dom_serializer_1.default(wrapNode) + "`;\n            document.body.appendChild(svg);\n          }\n\n          ";
+                            htmlCode = "\n          let node = document.getElementById('" + finalSymbolId + "');\n          let wrap  = document.getElementById('svg-sprite-component-wrap');\n          if(!wrap){\n            wrap = document.createElement('div')\n            wrap.id = 'svg-sprite-component-wrap'\n            document.body.appendChild(wrap);\n          }\n          if(!node){\n            let svg = document.createElement('div');\n            svg.style = 'display:none';\n            svg.innerHTML = `" + dom_serializer_1.default(wrapNode) + "`;\n            wrap.appendChild(svg);\n          }\n\n          ";
                             cache.set(path, htmlCode + componentCode);
                             return [2 /*return*/, htmlCode + componentCode];
                         });

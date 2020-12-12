@@ -124,10 +124,17 @@ function createPlugin(options: Options = {}): Plugin {
        `
           const htmlCode = `
           let node = document.getElementById('${finalSymbolId}');
+          let wrap  = document.getElementById('svg-sprite-component-wrap');
+          if(!wrap){
+            wrap = document.createElement('div')
+            wrap.id = 'svg-sprite-component-wrap'
+            document.body.appendChild(wrap);
+          }
           if(!node){
             let svg = document.createElement('div');
+            svg.style = 'display:none';
             svg.innerHTML = \`${render(wrapNode)}\`;
-            document.body.appendChild(svg);
+            wrap.appendChild(svg);
           }\n
           `
           cache.set(path, htmlCode + componentCode)

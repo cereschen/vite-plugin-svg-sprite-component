@@ -5,3 +5,4 @@ import App from './App.vue'
 const app = createApp(App)
 registerIcons(app)
 app.mount('#app')
+
