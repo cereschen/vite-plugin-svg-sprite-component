@@ -2,9 +2,12 @@
   "compilerOptions": {
     "allowJs": true,
     "baseUrl": ".",
+    "module": "ESNext",
+    "moduleResolution": "node",
     "paths": {
       "/@/*":["src/*"]
-    }
+    },
+    "types": ["vite/client"]
   },
   "include": ["src/**/*.vue","src/**/*.js", "src/**/*.ts"]
 }

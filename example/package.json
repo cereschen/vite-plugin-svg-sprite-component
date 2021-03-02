@@ -11,8 +11,11 @@
   "author": "cereschen",
   "license": "Mit",
   "devDependencies": {
-    "vite": "latest",
-    "vite-plugin-svg-sprite-component": "latest",
-    "vite-transform-globby-import": "^1.0.0-rc.7"
+    "@vitejs/plugin-vue": "^1.1.5",
+    "@vue/compiler-sfc": "^3.0.7",
+    "vite": "^2.0.4"
+  },
+  "dependencies": {
+    "vue": "^3.0.7"
   }
 }
