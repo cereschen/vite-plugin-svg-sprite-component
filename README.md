@@ -9,24 +9,17 @@ Vite plugin for creating SVG sprites and components
 ```js
 // vite.config.js
 import svgSpritePlugin from "vite-plugin-svg-sprite-component"
-const sharedConfig = {
-  alias: {
-    '/@/': path.resolve(__dirname, 'src')
-  }
-}
+
 module.exports = {
   plugins: [svgSpritePlugin({ symbolId: (name)=> "icon-" + name })],
-  ...sharedConfig,
-  // It is recommended to use this plugin, otherwise you will need to manually import all svg files
-  transforms: [require('vite-transform-globby-import')(sharedConfig)]
 }
 ```
 ```js
 // main.js
 // globby import
-import svgs from 'globby!/@/icons/svg/*.@(svg)'
+const svgs = import.meta.globEager('/**your svg path*/*.svg')
 // normal
-import example from '/@/icons/svg/example.svg'
+import example from '/**your svg path*/example.svg'
 //  You should call it at least once so it will not be tree shaked
 console.log(svgs,example)
 ```
@@ -73,23 +66,26 @@ export type Options = {
    * Default behavior: /@/icons/example.svg => example
    */
   symbolId?: (name: string, path: string) => string,
-
-  /** export const [exportName] as VNode
-   * Default behavior: icon-example => IconExample
-   */
-  exportName?: (name: string, path: string) => string,
-
-  /**
-   *  export default [exportName] as VNode
-   * @default false
-   */
-  defaultExport?: boolean,
-
   /**
    * Remove attributes also include members in  style sttr
    * @default ['width','height']
    */
-  removeAttrs?: string[]
+  removeAttrs?: string[],
+
+  component?: {
+    /** The export component type, Only Vue now */
+    type: 'vue',
+    /** export const [exportName] as VNode
+ * Default behavior: icon-example => IconExample
+ */
+    exportName?: (name: string, path: string) => string,
+    
+    /**
+     *  export default [exportName] as VNode
+     * @default false
+     */
+    defaultExport?: boolean,
+  }
 }
 
 ```

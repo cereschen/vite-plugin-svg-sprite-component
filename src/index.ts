@@ -11,27 +11,32 @@ export type Options = {
    * Default behavior: /@/icons/example.svg => example
    */
   symbolId?: (name: string, path: string) => string,
-
-  /** export const [exportName] as VNode
-   * Default behavior: icon-example => IconExample
-   */
-  exportName?: (name: string, path: string) => string,
-
-  /**
-   *  export default [exportName] as VNode
-   * @default false
-   */
-  defaultExport?: boolean,
-
   /**
    * Remove attributes also include members in  style sttr
    * @default ['width','height']
    */
-  removeAttrs?: string[]
+  removeAttrs?: string[],
+
+  component?: {
+    /** The export component type, Only Vue now */
+    type: 'vue',
+    /** export const [exportName] as VNode
+ * Default behavior: icon-example => IconExample
+ */
+    exportName?: (name: string, path: string) => string,
+
+    /**
+     *  export default [exportName] as VNode
+     * @default false
+     */
+    defaultExport?: boolean,
+  }
 }
 
 function createPlugin(options: Options = {}): Plugin {
-  const { symbolId, exportName, defaultExport, removeAttrs } = options;
+  const { symbolId, component, removeAttrs } = options;
+
+
 
   const cache = new Map();
   return {
@@ -102,21 +107,32 @@ function createPlugin(options: Options = {}): Plugin {
 
       DomUtils.appendChild(wrapNode, svgNode)
 
-      let componentName = ''
-      if (exportName) {
-        componentName = exportName(svgName, path)
-      } else {
-        componentName = finalSymbolId.substr(0, 1).toUpperCase() + finalSymbolId.substr(1).replace(/-([a-z])?/g, (val, $1) => {
-          return $1 ? $1.toUpperCase() : ''
-        })
+
+
+
+      let componentCode = ''
+
+      if (component) {
+        const { exportName, defaultExport } = component
+        let componentName = ''
+        if (exportName) {
+          componentName = exportName(svgName, path)
+        } else {
+          componentName = finalSymbolId.substr(0, 1).toUpperCase() + finalSymbolId.substr(1).replace(/-([a-z])?/g, (val, $1) => {
+            return $1 ? $1.toUpperCase() : ''
+          })
+        }
+        if (component.type === 'vue') {
+          componentCode = `
+        import {h} from "vue";
+        export const ${componentName} = h('svg',{},h('use',{'xlink:href':'#${finalSymbolId}'}));
+        ${defaultExport ? `export default ${componentName}` : source};
+        `
+        }
       }
 
 
-      const componentCode = `
-   import {h} from "vue";
-   export const ${componentName} = h('svg',{},h('use',{'xlink:href':'#${finalSymbolId}'}));
-   ${defaultExport ? `export default ${componentName}` : source};
-   `
+
       const htmlCode = `
       let node = document.getElementById('${finalSymbolId}');
       let wrap  = document.getElementById('svg-sprite-component-wrap');

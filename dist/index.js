@@ -46,12 +46,12 @@ var path_1 = require("path");
 function createPlugin(options) {
     var _this = this;
     if (options === void 0) { options = {}; }
-    var symbolId = options.symbolId, exportName = options.exportName, defaultExport = options.defaultExport, removeAttrs = options.removeAttrs;
+    var symbolId = options.symbolId, component = options.component, removeAttrs = options.removeAttrs;
     var cache = new Map();
     return {
         name: 'svg-sprite-component',
         transform: function (source, path) { return __awaiter(_this, void 0, void 0, function () {
-            var tmp, code, svgName, finalSymbolId, svgCode, svgNode, _a, width, height, childElements, removeAttrList, wrapNode, componentName, componentCode, htmlCode;
+            var tmp, code, svgName, finalSymbolId, svgCode, svgNode, _a, width, height, childElements, removeAttrList, wrapNode, componentCode, exportName, defaultExport, componentName, htmlCode;
             return __generator(this, function (_b) {
                 if (!path.match(/\.svg$/i)) {
                     return [2 /*return*/, source];
@@ -107,16 +107,22 @@ function createPlugin(options) {
                 });
                 wrapNode = htmlparser2_1.parseDOM('<svg></svg>')[0];
                 htmlparser2_1.DomUtils.appendChild(wrapNode, svgNode);
-                componentName = '';
-                if (exportName) {
-                    componentName = exportName(svgName, path);
+                componentCode = '';
+                if (component) {
+                    exportName = component.exportName, defaultExport = component.defaultExport;
+                    componentName = '';
+                    if (exportName) {
+                        componentName = exportName(svgName, path);
+                    }
+                    else {
+                        componentName = finalSymbolId.substr(0, 1).toUpperCase() + finalSymbolId.substr(1).replace(/-([a-z])?/g, function (val, $1) {
+                            return $1 ? $1.toUpperCase() : '';
+                        });
+                    }
+                    if (component.type === 'vue') {
+                        componentCode = "\n        import {h} from \"vue\";\n        export const " + componentName + " = h('svg',{},h('use',{'xlink:href':'#" + finalSymbolId + "'}));\n        " + (defaultExport ? "export default " + componentName : source) + ";\n        ";
+                    }
                 }
-                else {
-                    componentName = finalSymbolId.substr(0, 1).toUpperCase() + finalSymbolId.substr(1).replace(/-([a-z])?/g, function (val, $1) {
-                        return $1 ? $1.toUpperCase() : '';
-                    });
-                }
-                componentCode = "\n   import {h} from \"vue\";\n   export const " + componentName + " = h('svg',{},h('use',{'xlink:href':'#" + finalSymbolId + "'}));\n   " + (defaultExport ? "export default " + componentName : source) + ";\n   ";
                 htmlCode = "\n      let node = document.getElementById('" + finalSymbolId + "');\n      let wrap  = document.getElementById('svg-sprite-component-wrap');\n      if(!wrap){\n        wrap = document.createElement('div')\n        wrap.id = 'svg-sprite-component-wrap'\n        document.body.appendChild(wrap);\n      }\n      if(!node){\n        let svg = document.createElement('div');\n        svg.style = 'display:none';\n        svg.innerHTML = `" + dom_serializer_1.default(wrapNode) + "`;\n        wrap.appendChild(svg);\n      }\n\n      ";
                 cache.set(path, htmlCode + componentCode);
                 return [2 /*return*/, htmlCode + componentCode];
