@@ -143,7 +143,7 @@ function createPlugin(options: Options = {}): Plugin {
       }
       if(!node){
         let svg = document.createElement('div');
-        svg.style = 'display:none';
+        svg.style.setProperty('display', 'none');
         svg.innerHTML = \`${render(wrapNode)}\`;
         wrap.appendChild(svg);
       }\n
