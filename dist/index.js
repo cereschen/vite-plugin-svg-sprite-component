@@ -51,7 +51,7 @@ function createPlugin(options) {
     return {
         name: 'svg-sprite-component',
         transform: function (source, path) { return __awaiter(_this, void 0, void 0, function () {
-            var tmp, code, svgName, finalSymbolId, svgCode, svgNode, _a, width, height, childElements, removeAttrList, wrapNode, componentCode, exportName, defaultExport, componentName, htmlCode;
+            var tmp, code, svgName, finalSymbolId, svgCode, svgNode, _a, width, height, childElements, removeAttrList, componentCode, exportName, defaultExport, componentName, htmlCode;
             return __generator(this, function (_b) {
                 if (!path.match(/\.svg$/i)) {
                     return [2 /*return*/, source];
@@ -105,8 +105,6 @@ function createPlugin(options) {
                         }
                     }
                 });
-                wrapNode = htmlparser2_1.parseDOM('<svg></svg>')[0];
-                htmlparser2_1.DomUtils.appendChild(wrapNode, svgNode);
                 componentCode = '';
                 if (component) {
                     exportName = component.exportName, defaultExport = component.defaultExport;
@@ -120,10 +118,10 @@ function createPlugin(options) {
                         });
                     }
                     if (component.type === 'vue') {
-                        componentCode = "\n        import {h} from \"vue\";\n        export const " + componentName + " = h('svg',{},h('use',{'xlink:href':'#" + finalSymbolId + "'}));\n        " + (defaultExport ? "export default " + componentName : source) + ";\n        ";
+                        componentCode = "\n        import {h} from \"vue\";\n        export const " + componentName + " = (props)=> h('svg',props,h('use',{'xlink:href':'#" + finalSymbolId + "'}));\n        " + (defaultExport ? "export default " + componentName : source) + ";\n        ";
                     }
                 }
-                htmlCode = "\n      let node = document.getElementById('" + finalSymbolId + "');\n      let wrap  = document.getElementById('svg-sprite-component-wrap');\n      if(!wrap){\n        wrap = document.createElement('div')\n        wrap.id = 'svg-sprite-component-wrap'\n        document.body.appendChild(wrap);\n      }\n      if(!node){\n        let svg = document.createElement('div');\n        svg.style.setProperty('display', 'none');\n        svg.innerHTML = `" + dom_serializer_1.default(wrapNode) + "`;\n        wrap.appendChild(svg);\n      }\n\n      ";
+                htmlCode = "\n      let node = document.getElementById('" + finalSymbolId + "');\n      let wrap  = document.getElementById('svg-sprite-component-wrap');\n      if(!wrap){\n        wrap = document.createElementNS('http://www.w3.org/2000/svg', 'svg')\n        wrap.id = 'svg-sprite-component-wrap';\n        wrap.style.setProperty('display', 'none');\n        document.body.appendChild(wrap);\n      }\n      if(!node){\n        let symbol = document.createElementNS('http://www.w3.org/2000/svg', 'symbol')\n        wrap.appendChild(symbol);\n        symbol.outerHTML = `" + dom_serializer_1.default(svgNode) + "`;\n      }\n\n      ";
                 cache.set(path, htmlCode + componentCode);
                 return [2 /*return*/, htmlCode + componentCode];
             });

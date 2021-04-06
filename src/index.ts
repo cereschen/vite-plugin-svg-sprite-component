@@ -103,13 +103,6 @@ function createPlugin(options: Options = {}): Plugin {
         }
       })
 
-      let wrapNode = parseDOM('<svg></svg>')[0] as Element
-
-      DomUtils.appendChild(wrapNode, svgNode)
-
-
-
-
       let componentCode = ''
 
       if (component) {
@@ -125,27 +118,25 @@ function createPlugin(options: Options = {}): Plugin {
         if (component.type === 'vue') {
           componentCode = `
         import {h} from "vue";
-        export const ${componentName} = h('svg',{},h('use',{'xlink:href':'#${finalSymbolId}'}));
+        export const ${componentName} = (props)=> h('svg',props,h('use',{'xlink:href':'#${finalSymbolId}'}));
         ${defaultExport ? `export default ${componentName}` : source};
         `
         }
       }
 
-
-
       const htmlCode = `
       let node = document.getElementById('${finalSymbolId}');
       let wrap  = document.getElementById('svg-sprite-component-wrap');
       if(!wrap){
-        wrap = document.createElement('div')
-        wrap.id = 'svg-sprite-component-wrap'
+        wrap = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+        wrap.id = 'svg-sprite-component-wrap';
+        wrap.style.setProperty('display', 'none');
         document.body.appendChild(wrap);
       }
       if(!node){
-        let svg = document.createElement('div');
-        svg.style.setProperty('display', 'none');
-        svg.innerHTML = \`${render(wrapNode)}\`;
-        wrap.appendChild(svg);
+        let symbol = document.createElementNS('http://www.w3.org/2000/svg', 'symbol')
+        wrap.appendChild(symbol);
+        symbol.outerHTML = \`${render(svgNode)}\`;
       }\n
       `
       cache.set(path, htmlCode + componentCode)

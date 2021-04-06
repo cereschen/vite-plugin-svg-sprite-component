@@ -15,7 +15,7 @@
       </svg>
       <div style="margin:30px;">components:</div>
       <div>
-        <!-- <IconTable fill="green" /> -->
+        <IconTable fill="green" />
       </div>
     </div>
   </div>
@@ -23,10 +23,10 @@
 
 <script>
 import { ref } from "vue"
-// import { IconTable } from "/@/icons/svg/table.svg"
+import { IconTable } from "/@/icons/svg/table.svg"
 export default {
   name: 'App',
-  // components: { IconTable },
+   components: { IconTable },
   setup() {
     const iconClass = ref('eye')
 
