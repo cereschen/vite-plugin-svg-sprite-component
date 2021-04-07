@@ -21,13 +21,14 @@ const svgs = import.meta.globEager('/**your svg path*/*.svg')
 // normal
 import example from '/**your svg path*/example.svg'
 //  You should call it at least once so it will not be tree shaked
-console.log(svgs,example)
+svgs
+example
 ```
 ### Any where you want
 ```html
 <template>
   <svg>
-    <use xlink:href="icon-example" />
+    <use xlink:href="#icon-example" />
   </svg>
 </template>
 

@@ -16,6 +16,10 @@ export type Options = {
    * @default ['width','height']
    */
   removeAttrs?: string[],
+  /**
+   * custom transform function to modify elements
+   */
+  transform?: (element: Element, style: Record<string, string>) => void
 
   component?: {
     /** The export component type, Only Vue now */
@@ -34,7 +38,7 @@ export type Options = {
 }
 
 function createPlugin(options: Options = {}): Plugin {
-  const { symbolId, component, removeAttrs } = options;
+  const { symbolId, component, removeAttrs, transform } = options;
 
 
 
@@ -58,7 +62,7 @@ function createPlugin(options: Options = {}): Plugin {
 
       let svgCode = code.match(/<svg[^]*<\/svg>/)
       if (!svgCode) return source
-      let svgNode = parseDOM(svgCode[0])[0] as Element
+      let svgNode = parseDOM(svgCode[0], { lowerCaseAttributeNames: false })[0] as Element
       svgNode.name = 'symbol'
       svgNode.attribs.id = finalSymbolId
       if (!Reflect.has(svgNode.attribs, 'viewBox')) {
@@ -71,28 +75,37 @@ function createPlugin(options: Options = {}): Plugin {
       const removeAttrList = removeAttrs || ['width', 'height']
 
       childElements.map(element => {
-        removeAttrList.map(attr => {
-          Reflect.deleteProperty(element.attribs, attr)
-        })
-
-        if (Reflect.has(element.attribs, 'style')) {
+        let styleObj: Record<string, string> = {}
+        const hasStyle = Reflect.has(element.attribs, 'style')
+        if (hasStyle) {
           let style = element.attribs['style'].split(';')
-          let obj: Record<string, string> = {}
           let keys = []
           style.map(item => {
             let kv = item.split(':')
             if (kv[0]) {
               keys.push(kv[0])
-              obj[kv[0]] = kv[1]
+              styleObj[kv[0]] = kv[1]
             }
           })
+        }
+        if (transform) {
+          transform(element, styleObj)
+        }
+        removeAttrList.map(attr => {
+          if (['width', 'height'].includes(attr) && element.name !== 'symbol') {
+            return
+          }
+          Reflect.deleteProperty(element.attribs, attr)
+        })
+
+        if (hasStyle) {
           removeAttrList.map(attr => {
-            Reflect.deleteProperty(obj, attr)
+            Reflect.deleteProperty(styleObj, attr)
           })
 
           let styleStr = ''
-          for (let i in obj) {
-            styleStr += `${i}:${obj[i]};`
+          for (let i in styleObj) {
+            styleStr += `${i}:${styleObj[i]};`
           }
 
           if (styleStr.trim()) {
@@ -136,7 +149,10 @@ function createPlugin(options: Options = {}): Plugin {
       if(!node){
         let symbol = document.createElementNS('http://www.w3.org/2000/svg', 'symbol')
         wrap.appendChild(symbol);
-        symbol.outerHTML = \`${render(svgNode)}\`;
+        ${Object.entries(svgNode.attribs).map(([k, v]) => {
+        return `symbol.setAttribute("${k}","${v}");`
+      }).join('')}
+        symbol.innerHTML = \`${render(svgNode.childNodes)}\`;
       }\n
       `
       cache.set(path, htmlCode + componentCode)

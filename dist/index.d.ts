@@ -1,3 +1,4 @@
+import { Element } from "domhandler";
 import { Plugin } from "vite";
 export declare type Options = {
     /**
@@ -10,6 +11,10 @@ export declare type Options = {
      * @default ['width','height']
      */
     removeAttrs?: string[];
+    /**
+     * custom transform function to modify elements
+     */
+    transform?: (element: Element, style: Record<string, string>) => void;
     component?: {
         /** The export component type, Only Vue now */
         type: 'vue';
