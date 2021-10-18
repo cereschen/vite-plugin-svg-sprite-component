@@ -43,6 +43,7 @@ var fs_1 = require("fs");
 var htmlparser2_1 = require("htmlparser2");
 var dom_serializer_1 = __importDefault(require("dom-serializer"));
 var path_1 = require("path");
+var magic_string_1 = __importDefault(require("magic-string"));
 function createPlugin(options) {
     var _this = this;
     if (options === void 0) { options = {}; }
@@ -51,10 +52,10 @@ function createPlugin(options) {
     return {
         name: 'svg-sprite-component',
         transform: function (source, path) { return __awaiter(_this, void 0, void 0, function () {
-            var tmp, code, svgName, finalSymbolId, svgCode, svgNode, _a, width, height, childElements, removeAttrList, componentCode, exportName, defaultExport, componentName, htmlCode;
+            var tmp, code, svgName, finalSymbolId, svgCode, svgNode, _a, width, height, childElements, removeAttrList, componentCode, exportName, defaultExport, componentName, htmlCode, transformedCode, s, result;
             return __generator(this, function (_b) {
                 if (!path.match(/\.svg$/i)) {
-                    return [2 /*return*/, source];
+                    return [2 /*return*/, { code: source, map: { mappings: '' } }];
                 }
                 tmp = cache.get(path);
                 if (tmp) {
@@ -134,8 +135,12 @@ function createPlugin(options) {
                     var k = _a[0], v = _a[1];
                     return "symbol.setAttribute(\"" + k + "\",\"" + v + "\");";
                 }).join('') + "\n        symbol.innerHTML = `" + dom_serializer_1.default(svgNode.childNodes) + "`;\n      }\n\n      ";
-                cache.set(path, htmlCode + componentCode);
-                return [2 /*return*/, htmlCode + componentCode];
+                transformedCode = htmlCode + componentCode;
+                s = new magic_string_1.default(source);
+                s.overwrite(0, source.length, transformedCode);
+                result = { code: transformedCode, map: s.generateMap() };
+                cache.set(path, result);
+                return [2 /*return*/, result];
             });
         }); }
     };

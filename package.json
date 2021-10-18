@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-svg-sprite-component",
-  "version": "1.0.8",
+  "version": "1.0.10",
   "description": "vite plugin for creating SVG sprites and components",
   "keywords": [
     "vue",
@@ -22,9 +22,10 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^14.14.37",
-    "vite": "^2.0.4"
+    "vite": "^2.5.0"
   },
   "dependencies": {
-    "htmlparser2": "^5.0.1"
+    "htmlparser2": "^5.0.1",
+    "magic-string": "^0.25.7"
   }
 }

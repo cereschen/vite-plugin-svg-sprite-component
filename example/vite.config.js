@@ -9,6 +9,9 @@ module.exports = defineConfig({
     alias: {
       '/@': path.join(__dirname, 'src')
     }
+  },
+  build:{
+    sourcemap:true
   }
   // It is recommended to use this plugin, otherwise you will need to manually import all svg files
 })

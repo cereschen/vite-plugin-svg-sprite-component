@@ -4,6 +4,7 @@ import { default as render } from "dom-serializer"
 import { Element } from "domhandler"
 import { Plugin } from "vite"
 import { basename } from "path";
+import MS from "magic-string"
 
 export type Options = {
   /**
@@ -37,7 +38,7 @@ export type Options = {
   }
 }
 
-function createPlugin(options: Options = {}): Plugin {
+function createPlugin (options: Options = {}): Plugin {
   const { symbolId, component, removeAttrs, transform } = options;
 
 
@@ -47,7 +48,7 @@ function createPlugin(options: Options = {}): Plugin {
     name: 'svg-sprite-component',
     transform: async (source, path) => {
       if (!path.match(/\.svg$/i)) {
-        return source
+        return { code: source, map: { mappings: '' } }
       }
       let tmp = cache.get(path);
       if (tmp) {
@@ -155,9 +156,12 @@ function createPlugin(options: Options = {}): Plugin {
         symbol.innerHTML = \`${render(svgNode.childNodes)}\`;
       }\n
       `
-      cache.set(path, htmlCode + componentCode)
-
-      return htmlCode + componentCode
+      const transformedCode = htmlCode + componentCode
+      const s = new MS(source)
+      s.overwrite(0, source.length, transformedCode)
+      const result = { code: transformedCode, map: s.generateMap() }
+      cache.set(path, result)
+      return result
     }
   };
 };
